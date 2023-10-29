@@ -127,3 +127,21 @@ exports.updateJob = async (req, res) => {
       res.status(500).json({ error: error.message });
     }
   };
+
+
+exports.getAllJobs = async (req, res) => {
+    try {
+      const { skills, searchTerm } = req.query;
+  
+      const filter = {};
+      if (skills) filter.skillsRequired = { $in: skills.split(",") };
+      if (searchTerm) filter.jobPosition = new RegExp(searchTerm, "i");
+  
+      // Find job listings that match the filter
+      const jobListings = await JobListing.find(filter);
+  
+      res.status(200).json({ jobListings });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };
