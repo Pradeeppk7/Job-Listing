@@ -25,6 +25,7 @@ app.get('/health', (req, res) => {
 });
 
 app.use("/", authRouter);
+app.use("/", jobRouter);
 
 
 app.use((req, res, next) => {
@@ -36,7 +37,7 @@ app.use((req, res, next) => {
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res
-    .status(500)
+    .status(err.status || 500)
     .json({ error: "Something went wrong! Please try again later." });
 });
 
