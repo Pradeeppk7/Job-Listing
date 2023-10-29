@@ -61,3 +61,69 @@ exports.addJob = async (req, res) => {
   }
 };
 
+exports.updateJob = async (req, res) => {
+    try {
+      const jobId = req.params.id;
+      const {
+        companyName,
+        addLogoURL,
+        jobPosition,
+        monthlySalary,
+        jobType,
+        remoteOnsite,
+        jobLocation,
+        jobDescription,
+        aboutCompany,
+        skillsRequired,
+      } = req.body;
+  
+      // Check if all the required fields are provided
+      if (
+        !companyName ||
+        !jobPosition ||
+        !jobDescription ||
+        !skillsRequired ||
+        !aboutCompany ||
+        !monthlySalary ||
+        !jobType ||
+        !remoteOnsite ||
+        !addLogoURL
+      ) {
+        return res
+          .status(400)
+          .json({ error: "Please provide all required fields" });
+      }
+  
+      const updatedJobLocation = jobLocation === "" ? "Remote" : jobLocation;
+  
+      const updatedLogoURL = req.body.addLogoURL
+        ? req.body.addLogoURL
+        : "https://eu.ui-avatars.com/api/?name=John+Doe&size=250";
+  
+      // Find the existing job listing by ID
+      const jobListing = await JobListing.findById(jobId);
+  
+      if (!jobListing) {
+        return res.status(404).json({ error: "Job listing not found" });
+      }
+  
+      // Update the job listing fields
+      jobListing.companyName = companyName;
+      jobListing.addLogoURL = updatedLogoURL;
+      jobListing.jobPosition = jobPosition;
+      jobListing.monthlySalary = monthlySalary;
+      jobListing.jobType = jobType;
+      jobListing.remoteOnsite = remoteOnsite;
+      jobListing.jobLocation = updatedJobLocation;
+      jobListing.jobDescription = jobDescription;
+      jobListing.aboutCompany = aboutCompany;
+      jobListing.skillsRequired = skillsRequired;
+  
+      // Save the updated job listing
+      await jobListing.save();
+  
+      res.status(200).json({ message: "Job listing updated successfully" });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };
